@@ -75,7 +75,7 @@ public class JavaEE8Resource {
     }
     
     @POST
-    @Path("graph")    
+    @Path("graph1")    
     public String Graph(String nodo){
        Gson gson =new Gson();
         GraphAux aux= gson.fromJson(nodo, GraphAux.class);
@@ -146,7 +146,7 @@ public class JavaEE8Resource {
     
     
     @POST
-    @Path("prueba")    
+    @Path("graph")    
     public String prueba(String nodo){
         Gson gson =new Gson();
         GraphAux aux= gson.fromJson(nodo, GraphAux.class);
@@ -181,6 +181,12 @@ public class JavaEE8Resource {
             node.setTypeOfVariable("finite-states");
             node.setKindOfNode("chance");
         }
+        LinkList ll = bnet.getLinkList();
+        for(i=0 ; i< ll.size() ; i++){
+            Link l=ll.elementAt(i);
+            Node head = l.getHead();
+            head.addParent(l);
+        }
         
         for (i=0 ; i< bnet.getNodeList().size() ; i++) {
             nodes = new NodeList();
@@ -199,12 +205,6 @@ public class JavaEE8Resource {
             bnet.getRelationList().addElement(relation);
         }
         
-        LinkList ll = bnet.getLinkList();
-        for(i=0 ; i< ll.size() ; i++){
-            Link l=ll.elementAt(i);
-            Node head = l.getHead();
-            head.addParent(l);
-        }
         bnet.setName("");
         bnet.setTitle("");
         bnet.setComment("");
@@ -214,16 +214,17 @@ public class JavaEE8Resource {
         bnet.setLocked(false);
         bnet.setVersion((float)1.0);
         
-        //if(true) return info(bnet);
+        //
         
         Vector rl = bnet.getRelationList();
         ResultadoLink resultadolink = new ResultadoLink();
+        
         for(int m=0;m< rl.size();m++){
             Relation relacion =(Relation) rl.get(m);
             FiniteStates fs =(FiniteStates) relacion.getVariables().firstElement();
             int estados = fs.getNumStates();
             //if(m==1) return relacion.getVariables().size()+" ";
-            if(relacion.getVariables().size()== 1){ 
+            if(relacion.getVariables().size()== 1){
                 PotentialTable p=(PotentialTable)relacion.getValues();
                 double[] valores =p.getValues();
                 double[][] matrizfinal=new double[valores.length][1];
@@ -231,17 +232,33 @@ public class JavaEE8Resource {
                     matrizfinal[t][0]=valores[t];
                 }
                 resultadolink.add(sumarFilas(matrizfinal,fs.getName(),1,estados));
+            }
+        }
+        
+        for(int m=0;m< rl.size();m++){
+            
+            Relation relacion =(Relation) rl.get(m);
+            FiniteStates fs =(FiniteStates) relacion.getVariables().firstElement();
+            int estados = fs.getNumStates();
+            //if(m==1) return relacion.getVariables().size()+" ";
+            
+            if(relacion.getVariables().size()== 1){
+                
             }else{
+              
                 Vector<double[]> indices= new Vector();
                 NodeList padres = relacion.getVariables();
                 
                 pa = bnet.parents(fs);
                 
-                for(int k=0; k< pa.size(); k++){
-                    indices.add(resultadolink.getbyId(pa.elementAt(k).getName()).getDatos());  
+                //if(m==0) return info(bnet);
+                NodeList padre= relacion.getVariables();
+                
+                for(int k=1; k< padre.size(); k++){
+                    indices.add(resultadolink.getbyId(padre.elementAt(k).getName()).getDatos());  
                 }
 
-                
+                //if(m==0) return info(bnet);
 
                 int[] num= new int[indices.size()];
                 for(int h=0; h< indices.size();h++){
