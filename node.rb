@@ -2,12 +2,11 @@
 class Node
 
 
-    def  initialize(id,states,matrix,parents,children)
+    def  initialize(id,states,matrix,parents)
         @id=id
         @states=states
         @matrix=matrix
         @parents=parents
-        @children=children
         @finalmatrix=Array.new(matrix.length()){Array.new(matrix[0].length())}
         @finalResult=[]
     end
@@ -19,6 +18,18 @@ class Node
     end
     def getNumState
         return @states.length()
+    end
+
+    def addParent(newParent)
+        if @parents == nil
+            @parents=[newParent]
+        else
+            @parents.push(newParent)
+        end
+    end
+
+    def getParents
+        return @parents
     end
     
     def getParentsStates
@@ -33,16 +44,12 @@ class Node
 
     def getParentsProb
         result=[]
-        if @parents != nil &&   @parents.length()>1 then
+        if @parents != nil then
             for father in @parents do
-                father.calculateMatrix
+                father.oneStepCalculate
                 result.push(father.getFinalmatrix)
             end
-        elsif @parents.length()==1 then
-            @parents[0].calculateMatrix
-            return @parents[0].getFinalmatrix
-        else
-            result.push(@finalResult)
+
         end
         return result
     end
@@ -72,8 +79,8 @@ class Node
     def calculateMatrix()
         #Comprobar que vector_input.lenght() == numOfInput matrix columnas
         if @parents == nil then
-            @finalmatrix=@matrix
-            @finalResult=@matrix
+            @finalmatrix=@matrix[0]
+            @finalResult=@matrix[0]
         else
             vector_input=self.getParentsProb
             height=self.calculateWeight(vector_input)
@@ -92,12 +99,14 @@ class Node
 
     def sumFile()
         #self.calculateMatrix
-        for linea in (0.. @finalmatrix.length()-1) do
-            actual=0
-            for column in (0.. @finalmatrix[linea].length()-1) do
-                actual+=@finalmatrix[linea][column]
+        if  @parents != nil then
+            for linea in (0.. @finalmatrix.length()-1) do
+                actual=0
+                for column in (0.. @finalmatrix[linea].length()-1) do
+                    actual+=@finalmatrix[linea][column]
+                end
+                @finalResult[linea]=actual
             end
-            @finalResult[linea]=actual
         end
 
     end
