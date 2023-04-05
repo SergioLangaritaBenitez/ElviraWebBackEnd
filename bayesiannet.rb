@@ -12,11 +12,15 @@ class BayesianNet
 
     def createNet(text)
         data = JSON.parse(text)
+        evaluate=data["evaluate"]
         nodes=Array.new(data['nodes'].length())
         for i in (0 .. data['nodes'].length()-1) do 
             actualnode=data['nodes'][i]
             #puts"#{actualnode["matrix"]}"
             nodes[i]=Node.new(actualnode["id"],actualnode["state"],actualnode["matrix"],nil) 
+            if actualnode["id"] == evaluate then
+                @lastnode=nodes[i]
+            end
             #puts"#{nodes[i]}"
         end
         for conne in data['connections'] do
@@ -33,44 +37,19 @@ class BayesianNet
     end
     
     def evaluateNet
-        thelastnode=getlastNode
-        thelastnode.oneStepCalculate()
-        #@nodes[0].calculateMatrix()
-        #@nodes[0].crearVector(values)
-        #puts"#{@nodes[0].getFinalResult}"
-        #puts"#{@nodes[0].getFinalmatrix}"
-        #@nodes[0].sumFile()
-        #puts"#{@nodes[0].getFinalResult}"
-        #puts"#{@nodes[0].getFinalmatrix}"
-        #return @finalResult
-        #puts "#{@nodes}"
-        return thelastnode.getFinalResult
+        @lastnode.oneStepCalculate()
+        return @lastnode.getFinalResult
     end
 
     def getResult
-        result={}
+        result='{"result":['
         for node in @nodes do
-            #puts "#{node}"
-            result=node
+            result+='{"id":"'+node.getId.to_s+'","state":'+node.getStates.to_s+',"matrix":'+node.getFinalResult.to_s+'},'
         end
+        result=result[0..-2]+"]}"
         return result
     end
 
-    def getlastNode
-        puts "#{@nodes}"
-        its=[]
-        
-        for i in (0 .. @nodes.length()-1) do
-            its.push(@nodes[i])
-            if @nodes[i].getParents != nil then
-                for parent in @nodes[i].getParents do
-                    its.pop(parent)
-                end
-            end
-            #puts "#{}"
-        end
-        puts "estos nodos #{its} ---------"
-        return its[0]
-    end
+
 
 end

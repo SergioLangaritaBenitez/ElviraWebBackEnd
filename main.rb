@@ -8,4 +8,7 @@ end
 
 get '/calculateNaivesNet' do
     "here we do the calculation"
+    net=BayesianNet.new(input)
+    net.evaluateNet
+    return net.getResult
     end

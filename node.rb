@@ -47,7 +47,7 @@ class Node
         if @parents != nil then
             for father in @parents do
                 father.oneStepCalculate
-                result.push(father.getFinalmatrix)
+                result.push(father.getFinalResult)
             end
 
         end
