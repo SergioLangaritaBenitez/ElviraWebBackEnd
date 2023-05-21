@@ -1,14 +1,15 @@
 require 'sinatra'
+require_relative 'bayesiannet'
 configure { set :server, :puma }
 
     
 get '/' do
-    "Hello World!222"
+    "Elvira Web Backend is Ready"
 end
 
-get '/calculateNaivesNet' do
-    "here we do the calculation"
-    net=BayesianNet.new(input)
+post '/calculateNaivesNet' do
+    params = request.body.read
+    net=BayesianNet.new(params)
     net.evaluateNet
     return net.getResult
-    end
+end
